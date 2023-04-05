@@ -308,6 +308,30 @@ void LoRaWANClass::sendUplink(char *data, unsigned int len, unsigned char confir
     memcpy(Buffer_Tx.Data, data, len);
 }
 
+void LoRaWANClass::sendCustomUplink(char *data, unsigned int len, unsigned char freq_idx, unsigned char mport)
+{
+
+// Only EU_868
+#if defined(EU_868)    
+    LoRa_Settings.Channel_Tx = freq_idx;
+    LoRa_Settings.Channel_Rx = freq_idx;      // same rx and tx channel 
+#else // other - do noting
+    return;
+#endif
+
+    LoRa_Settings.Confirm = 3;
+    if (mport == 0)
+        mport = 1;
+    if (mport > 223)
+        mport = 1;
+    LoRa_Settings.Mport = mport;
+    //Set new command for RFM
+    RFM_Command_Status = NEW_RFM_COMMAND;
+    Buffer_Tx.Counter = len;
+    memcpy(Buffer_Tx.Data, data, len);
+}
+
+
 void LoRaWANClass::setDataRate(unsigned char data_rate)
 {
     drate_common = data_rate;
@@ -413,6 +437,10 @@ void LoRaWANClass::update(void)
     //Type A mote transmit receive cycle
     if ((RFM_Command_Status == NEW_RFM_COMMAND || RFM_Command_Status == JOIN) && LoRa_Settings.Mote_Class == CLASS_A)
     {
+
+        // Bug without this there is always an ACK
+        Message_Rx.Frame_Control = 0;
+
         //LoRaWAN TX/RX cycle
         LORA_Cycle(&Buffer_Tx, &Buffer_Rx, &RFM_Command_Status, &Session_Data, &OTAA_Data, &Message_Rx, &LoRa_Settings);
 

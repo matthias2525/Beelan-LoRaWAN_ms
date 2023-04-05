@@ -73,6 +73,7 @@ public:
     void setAppSKey(const char *ApskKey_in);
     void setDevAddr(const char *devAddr_in);
     void sendUplink(char *data, unsigned int len, unsigned char confirm, unsigned char mport);
+    void sendCustomUplink(char *data, unsigned int len, unsigned char freq_idx, unsigned char mport);
     void setDataRate(unsigned char data_rate);
     void setChannel(unsigned char channel);
     unsigned char getChannel();

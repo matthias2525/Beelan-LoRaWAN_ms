@@ -231,6 +231,10 @@ void LORA_Send_Data(sBuffer *Data_Tx, sLoRa_Session *Session_Data, sSettings *Lo
 	{
 		Message.MAC_Header = Message.MAC_Header | 0x40;
 	}
+	// Custom Message 
+	else if(LoRa_Settings->Confirm == 0x03) {
+		Message.MAC_Header = Message.MAC_Header | 0xE0;
+	}
 	//Confirmed
 	else
 	{
